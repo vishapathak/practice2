@@ -6,9 +6,9 @@ const {
   updateUser,
   deleteuser,
   forgotPassword,
-} = require("../controller/controller");
+} = require("../controller/userController");
 const route = express.Router();
-const { authenticate } = require("../middleware/authentication");
+const { authenticate } = require("../middleware/userAuthentication");
 
 {
   /**
@@ -16,20 +16,21 @@ const { authenticate } = require("../middleware/authentication");
     */
 }
 
-route.post("/a1/register/routes", Registercontroller);
+route.post("/v1/register/routes", Registercontroller);
+
 {
   /**
     loginEndpoint = /login/router/userRouter
     */
 }
 
-route.post("/log/router/userRouter", loginController);
+route.post("/v1/login/router", loginController);
 
 {
   /** profileendpoint = /profile/router/userprofile */
 }
 
-route.get("/profile/router/userprofile", authenticate, profileController);
+route.get("/v1/profile/router", authenticate, profileController);
 
 {
   /**
@@ -37,14 +38,14 @@ route.get("/profile/router/userprofile", authenticate, profileController);
     endpoint: /updateUser/route/User/:email
     */
 }
-route.put("/updateUser/route/User", authenticate, updateUser);
+route.put("/v1/updateUser/router", authenticate, updateUser);
 {
   /**
     this is for delete user
     endpoint: delete/route/user
     */
 }
-route.delete("/delete/route/user", authenticate, deleteuser);
+route.delete("/v1/delete/router", authenticate, deleteuser);
 
 {
     /**
@@ -52,6 +53,6 @@ route.delete("/delete/route/user", authenticate, deleteuser);
      * endpoint - /forgot/userpassword/route
      */
 }
-route.post("/forgot/userpassword/route",forgotPassword)
+route.post("v1/forgotPassword/router",forgotPassword)
 
 module.exports = route;

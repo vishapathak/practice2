@@ -28,13 +28,9 @@ const schema = new mongoose.Schema({
         require: true,
         trim:true
      },
-     token:{
-      type: string,
-      default: ' '
-     },
      created: {
         type: Date,
         default:Date.now
      }
 })
-module.exports = mongoose.model("user-reg", schema);
+module.exports = mongoose.model("user", schema);

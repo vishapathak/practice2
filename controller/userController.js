@@ -1,9 +1,9 @@
 const zo = require("zod");
-const user = require("../schema/schema");
+const user = require("../schema/userSchema");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-// const mailer = require("nodemailer");
-const randomString = require("randomstring");
+const nodemailer = require("nodemailer");
+//const randomString = require("randomstring");
 
 
 const userSchema = zo.object({
@@ -17,8 +17,7 @@ const userSchema = zo.object({
     .string()
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/, {
       error: "password mush consist of letter and special character and number",
-    }),
-    token: zo.string(),
+    })
 });
 
 async function Registercontroller(req, res) {
@@ -131,26 +130,28 @@ async function updateUser(req, res) {
     let User = await user.findOneAndUpdate(
       { email: req.body.email },
       validateUser,
-      { returnDocument: "after" },
+      
+  { returnDocument: "after" },
     );
     // console.log(User);
     if (!User) {
+      return 
       res.status(400).json({
         error: true,
         success: false,
-        message: "unable to update",
+        message: "Unable to update",
       });
     }
     res.status(200).json({
       error: false,
       success: true,
-      message: "update successfully",
+      message: "Update successfully",
       User,
     });
   } catch (error) {
     res.status(500).json({
       message: " error in updateing user profile",
-      error: JSON.parse.error,
+      error: JSON.parse(error),
     });
   }
 }
@@ -168,12 +169,12 @@ async function deleteuser(req, res) {
     res.status(200).json({
       success: true,
       error: false,
-      message: " user deleted successfully",
+      message: "User deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
       message: " error in updateing user profile",
-      error: JSON.parse.error,
+      error: JSON.parse(error),
     });
   }
 }
@@ -183,27 +184,48 @@ async function forgotPassword(req, res) {
         const User = await user.findOne({email:req.body.email})
 
         if(!User){
-          res.status(404).json({
+           return res.status(404).json({
                 error: true,
                 success: false,
                 message:" user not found"
           })
          }
-         let token = randomString.generate();
-         let generatedURL = "localhost:3000/reset-password/?token=12abcdes";
+         //let token = randomString.generate();
+         const transporter = nodemailer.createTransport({
+          host: process.env.MAIL_HOST,
+          port: process.env.MAIL_PORT,
+          secure: false,
+          auth: {
+            user: process.env.MAIL_USER,
+            pass: process.env.MAIL_PASS,
+          },
+            });
+
+           
+
+         const token = "visha12344321";
+         let generatedURL = `${process.env.FRONTEND}/reset-password/?token=${token}`;
+
+             await transporter.sendMail({
+      from: process.env.MAIL_USER,
+      to: req.body.email,
+      subject: "Clarify Forget Password",
+      text: generatedURL,
+    });
+
          res.status(200).json({
           error: false,
           success: true,
           message: "User reset password has been generated successfully",
-          generatedURL,
+          
          })
         //    let newString = randomString.generate();
         //     const data = await user.updateOne({email:req.body.email},{$set:{token:newString}})
         //     res.status(200).json({success:true, message:" check email first"})
     } catch (error) {
         res.status(500).json({
-            message:" unable to forgot password",
-            error:JSON.parse.error
+            message:"unable to forgot password",
+            error,
         })
     }
 }
