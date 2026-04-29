@@ -1,8 +1,11 @@
-const { genSalt } = require('bcryptjs');
+
 const { default: mongoose } = require('mongoose');
-const mongos = require('mongoose');
 const {string} = require('zod');
 const invoiceSchema = new mongoose.Schema({
+    user_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user"
+    },
     businessDetail:{
         businessName:{
             type:string,

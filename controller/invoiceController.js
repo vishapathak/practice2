@@ -2,6 +2,7 @@ const invoice = require("../schema/invoiceSchema");
 const zo = require('zod');
 
 const invoiceSchema = zo.object({
+    user_id: zo.object(),
    businessDetail:  zo.object({
     businessName: zo.string(),
     address:zo.string(),
@@ -70,5 +71,23 @@ try {
     })
 }
 }
+
+async function readInvoice (req,res){
+    const invoiceId = req.params.id;
+    const Invoice = await invoice.findById({invoiceId})
+        if(!Invoice){
+           return res.status(404).json({
+                error: true,
+                success: false,
+                message:" user not found"
+          })
+         }
+          res.status(200).json({
+            success: true,
+            error: false,
+            message : "invoice found successfully",
+            data:Invoice,
+          })
+}
     
-module.exports ={createInvoice};
+module.exports ={createInvoice, readInvoice};
